@@ -1,17 +1,23 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
+import json
 
 app = Flask(__name__)
 
 
+# Endpoint to receive webhook requests
 @app.route('/webhook', methods=['POST'])
-def receive_webhook():
-    data = request.json
-    return 'Trade signal received', 200
+def webhook():
+    try:
+        # Get JSON data from the request
+        json_data = request.get_json()
 
+        # Write JSON data to a file
+        with open('webhook_data.txt', 'w') as file:
+            json.dump(json_data, file)
 
-@app.route('/get_signal', methods=['GET'])
-def get_signal():
-    return jsonify({"action": "BUY", "symbol": "EURUSD", "quantity": 0.1})
+        return 'Webhook data received successfully', 200
+    except Exception as e:
+        return str(e), 500
 
 
 # app.run()
